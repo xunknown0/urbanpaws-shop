@@ -1,64 +1,71 @@
-const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
-const cookieParser = require('cookie-parser');
+const favicon = require('serve-favicon');
 const logger = require('morgan');
+const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const passport = require('passport');
-const session = require('express-session');
 const User = require('./models/user');
-const LocalStrategy = require('passport-local').Strategy;
+const session = require('express-session');
 const mongoose = require('mongoose');
 
-//Require Routes
-const indexRouter = require('./routes/index');
-const productsRouter = require('./routes/products');
-const reviewsRouter = require('./routes/reviews');
+// require routes
+const indexRouter = require("./routes/index");
+const productsRouter = require("./routes/products");
+const reviewsRouter = require("./routes/reviews");
 
 const app = express();
+// ✅ Parse JSON bodies
+app.use(express.json());
 
-//Connect to Database
 
-mongoose.connect('mongodb://localhost:27017/urbanpaw-shop',{useNewUrlParser:true});
+// ✅ Parse URL-encoded bodies (for form submissions)
+app.use(express.urlencoded({ extended: true }));
 
-const db = mongoose.connection;
-db.on('error', console.error.bind(console,'connection error'));
-db.once('open',()=>{
-  console.log('we\'re connected!');
-});
+// connect to the database
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/urbanpaw-shop')
+  .then(() => console.log('✅ MongoDB connected'))
+  .catch(err => console.error('❌ MongoDB connection error:', err));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+// uncomment after placing your favicon in /public
+//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-//Configure Passport and Session
+
+// Sessions
 app.use(session({
-  secret: 'Puppy Doxie',
+  secret: 'hang ten dude!',
   resave: false,
-  saveUninitialized: true,
-  cookie: { secure: true }
+  saveUninitialized: true
 }));
 
-passport.use(new LocalStrategy(User.authenticate()));
+app.use(passport.initialize());
+app.use(passport.session());
 
-// use static serialize and deserialize of model for passport session support
+// Use createStrategy
+passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-//Mount Route
-app.use('/', indexRouter);
-app.use('/products', productsRouter);
-app.use('/products/:id/reviews', reviewsRouter);
+
+// Mount routes
+app.use("/", indexRouter);
+app.use("/products", productsRouter);
+app.use("/products/:id/reviews", reviewsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  next(createError(404));
+  const err = new Error('Not Found');
+  err.status = 404;
+  next(err);
 });
 
 // error handler

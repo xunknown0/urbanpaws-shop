@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const { userRegister } = require('../controllers/index');
 
-
 /* GET home page. */
 router.get('/', (req, res, next) => {
   res.render('index', { title: 'UrbanPaws Shop- Home' });
@@ -13,8 +12,9 @@ router.get('/register', (req, res, next) => {
   res.send('GET /register');
 });
 
-/* POST register */
+/* POST /register */
 router.post('/register', userRegister);
+
 
 /* GET login*/
 router.get('/login', (req, res, next) => {

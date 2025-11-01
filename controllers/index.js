@@ -1,21 +1,24 @@
 const User = require('../models/user');
 
 module.exports = {
-	userRegister(req, res, next) {
-		const newUser = new User({
-			username: req.body.username,
-			email: req.body.email,
-			image: req.body.image
-		});
-		User.register(newUser, req.body.password, (err) => {
-		  if (err) {
-		    console.log('error while user register!', err);
-		    return next(err);
-		  }
+  userRegister(req, res, next) {
+    // Accept from body or query for testing
+    const data = Object.keys(req.body).length ? req.body : req.query;
 
-		  console.log('user registered!');
+    const newUser = new User({
+      username: data.username,
+      email: data.email,
+      image: data.image
+    });
 
-		  res.redirect('/');
-		});
-	}
-}
+    User.register(newUser, data.password, (err) => {
+      if (err) {
+        console.log('A user with this email already exists.', err);
+        return next(err);
+      }
+
+      console.log('User Registered!');
+      res.redirect('/');
+    });
+  }
+};
