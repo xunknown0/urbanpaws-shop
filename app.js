@@ -9,6 +9,7 @@ const User = require('./models/user');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const flash = require('connect-flash');
+const methodOverride = require(('method-override'));
 
 // require routes
 const indexRouter = require("./routes/index");
@@ -40,6 +41,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(methodOverride('_method'));
 
 
 // Sessions

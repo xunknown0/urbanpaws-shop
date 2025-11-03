@@ -1,4 +1,14 @@
-<h1><%=product.title%></h1>
-<div><p>Price: <%=product.price%></p></div>
-<div><p>Description: <%=product.description%></p></div>
-<div><p>Location: <%=product.location%></p></div>
+<h1><%= product.title %></h1>
+<div><p>Price:<%= product.price.toFixed(2) %></p></div>
+<div><p>Description: <%= product.description %></p></div>
+<div><p>Location: <%= product.location %></p></div>
+<div><a href="/products/<%= product._id %>/edit">
+  <button>Edit Product</button>  
+</a>
+</div>
+<br>
+<div>
+<form action="/products/<%=product._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Are you sure you want to delete this product?');">
+    <input type="submit" value="Delete">
+    </form>
+</div>

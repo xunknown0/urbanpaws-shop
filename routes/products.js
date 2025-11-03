@@ -1,37 +1,34 @@
 const express = require('express');
 const router = express.Router();
-const { errorHandler } = require('../middleware/errorHandler'); 
+const { asyncErrorHandler } = require('../middleware/errorHandler'); 
 const {
-  getAllProducts, 
-  newPostProducts, 
-  createProducts, 
-  showProducts } = require ('../controllers/productCrontroller');
+  productIndex, 
+  productNewPost, 
+  productCreate, 
+  productShow,
+  productEdit,
+  productUpdate,
+  productDestroy } = require ('../controllers/productCrontroller');
 /* GET products index */
-router.get('/', errorHandler(getAllProducts));
+router.get('/', asyncErrorHandler(productIndex));
 
 /* GET new product form */
-router.get('/new', errorHandler(newPostProducts));
+router.get('/new', asyncErrorHandler(productNewPost));
 
 /* POST products CREATE /products */
-router.post('/', errorHandler(createProducts));
+router.post('/', asyncErrorHandler(productCreate));
 
 /* GET products SHOW /products/:id */
-router.get('/:id', errorHandler (showProducts));
+router.get('/:id', asyncErrorHandler (productShow));
 
 /* GET products EDIT /product/:id/edit */
-router.get('/:id/edit', (req, res, next) => {
-  res.send('EDIT /products');
-});
+router.get('/:id/edit', asyncErrorHandler(productEdit));
 
 /* PUT products UPDATE /products/id */
-router.put('/:id', (req, res, next) => {
-  res.send('UPDATE /products/id');
-});
+router.put('/:id', asyncErrorHandler(productUpdate));
 
 /* DELETE products DELETE /products/id */
-router.delete('/:id', (req, res, next) => {
-  res.send('DELETE /products/:id');
-});
+router.delete('/:id', asyncErrorHandler(productDestroy));
 
 
 module.exports = router;
