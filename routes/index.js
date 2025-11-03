@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { userRegister } = require('../controllers/authController');
+const { userRegister, userLogin, userLogout } = require('../controllers/authController');
 const { errorHandler } = require('../middleware/errorHandler'); 
 
 /* GET home page. */
@@ -18,14 +18,22 @@ router.post('/register', errorHandler(userRegister));
 
 
 /* GET login*/
-router.get('/login', (req, res, next) => {
-  res.send('GET /login');
+router.get('/dashboard', (req, res) => {
+  if (!req.isAuthenticated()) {
+    req.flash('error', 'Please log in first.');
+    return res.redirect('/login');
+  }
+  res.render('dashboard', { user: req.user }); // or res.send('Welcome to dashboard');
 });
 
 /* POST login */
-router.post('/login', (req, res, next) => {
-  res.send('POST /login');
-});
+router.post('/login',userLogin );
+
+/* GET logout */
+
+router.get('/logout',userLogout );
+
+
 
 /* GET profile/:user_id*/
 router.get('/profile', (req, res, next) => {

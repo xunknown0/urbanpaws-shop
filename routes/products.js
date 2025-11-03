@@ -1,25 +1,22 @@
 const express = require('express');
 const router = express.Router();
+const { errorHandler } = require('../middleware/errorHandler'); 
+const {
+  getAllProducts, 
+  newPostProducts, 
+  createProducts, 
+  showProducts } = require ('../controllers/productCrontroller');
+/* GET products index */
+router.get('/', errorHandler(getAllProducts));
 
-/* GET products index /products */
-router.get('/', (req, res, next) => {
-  res.send('/products');
-});
-
-/* GET products NEW /products */
-router.get('/new', (req, res, next) => {
-  res.send('NEW /products/new');
-});
+/* GET new product form */
+router.get('/new', errorHandler(newPostProducts));
 
 /* POST products CREATE /products */
-router.post('/', (req, res, next) => {
-  res.send('CREATE /products');
-});
+router.post('/', errorHandler(createProducts));
 
 /* GET products SHOW /products/:id */
-router.get('/:id', (req, res, next) => {
-  res.send('SHOW /products');
-});
+router.get('/:id', errorHandler (showProducts));
 
 /* GET products EDIT /product/:id/edit */
 router.get('/:id/edit', (req, res, next) => {

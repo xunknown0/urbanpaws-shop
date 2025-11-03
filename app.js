@@ -8,6 +8,7 @@ const passport = require('passport');
 const User = require('./models/user');
 const session = require('express-session');
 const mongoose = require('mongoose');
+const flash = require('connect-flash');
 
 // require routes
 const indexRouter = require("./routes/index");
@@ -15,6 +16,7 @@ const productsRouter = require("./routes/products");
 const reviewsRouter = require("./routes/reviews");
 
 const app = express();
+
 // ✅ Parse JSON bodies
 app.use(express.json());
 
@@ -49,7 +51,13 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(flash());
 
+app.use((req, res, next) => {
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
+});
 // Use createStrategy
 passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());

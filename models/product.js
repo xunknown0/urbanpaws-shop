@@ -2,23 +2,23 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const ProductSchema = new Schema({
-    title: String,
-    price: String,
+    title: { type: String, required: true },
+    price: { type: Number, required: true },
     description: String,
     images: [String],
     location: String,
     lat: Number,
     lng: Number,
-    roles: {
+    owner: {
         type: Schema.Types.ObjectId,
         ref: 'User'
     },
-    reviews: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'Review'
-        }
-    ]
-});
+   reviews: [
+  {
+    type: Schema.Types.ObjectId,
+    ref: 'Review'
+  }
+]
+}, { timestamps: true });
 
 module.exports = mongoose.model('Product', ProductSchema);
