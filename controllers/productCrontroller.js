@@ -1,12 +1,20 @@
-const Product = require('../models/product');
-require('../models/review'); // ensure Review model is registered
+const path = require("path");
+const Product = require("../models/product");
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_KEY,
+  api_secret: process.env.CLOUDINARY_SECRET,
+});
+require("../models/review"); // ensure Review model is registered
 
 module.exports = {
   // GET /products
   async productIndex(req, res, next) {
     try {
       const products = await Product.find({});
-      res.render('products/index', { products });
+      res.render("products/index", { products });
     } catch (err) {
       next(err);
     }
@@ -14,28 +22,63 @@ module.exports = {
 
   // GET /products/new
   productNewPost(req, res, next) {
-    res.render('products/new');
+    res.render("products/new");
   },
 
-  // POST /products
-  async productCreate(req, res, next) {
+async productCreate(req, res, next) {
     try {
+      console.log("FILES RECEIVED:", req.files);
+
+      if (!req.files || req.files.length === 0) {
+        return res.status(400).send("No files uploaded");
+      }
+
+      // Upload function for a single file
+      const uploadToCloudinary = (file) => {
+        return new Promise((resolve, reject) => {
+          if (file.path) {
+            cloudinary.uploader.upload(path.resolve(file.path), (err, result) => {
+              if (err) return reject(err);
+              resolve(result);
+            });
+          } else if (file.buffer) {
+            const stream = cloudinary.uploader.upload_stream((err, result) => {
+              if (err) return reject(err);
+              resolve(result);
+            });
+            stream.end(file.buffer);
+          } else {
+            reject(new Error("File has no path or buffer"));
+          }
+        });
+      };
+
+      // Upload all files
+      const uploadResults = await Promise.all(req.files.map(uploadToCloudinary));
+
+      // Map images for MongoDB
+      req.body.images = uploadResults.map(img => ({
+        url: img.secure_url,
+        public_id: img.public_id,
+      }));
+
+      // Create product
       const product = await Product.create(req.body);
       res.redirect(`/products/${product._id}`);
     } catch (err) {
+      console.error("Upload Error:", err);
       next(err);
     }
   },
-
   // GET /products/:id
   async productShow(req, res, next) {
     try {
       const { id } = req.params;
-      const product = await Product.findById(id).populate('reviews');
+      const product = await Product.findById(id).populate("reviews");
       if (!product) {
-        return res.status(404).send('Product not found');
+        return res.status(404).send("Product not found");
       }
-      res.render('products/show', { product });
+      res.render("products/show", { product });
     } catch (err) {
       next(err);
     }
@@ -48,7 +91,7 @@ module.exports = {
       if (!product) {
         return res.status(404).send("Product not found");
       }
-      res.render('products/edit', { product });
+      res.render("products/edit", { product });
     } catch (err) {
       next(err);
     }
@@ -64,7 +107,7 @@ module.exports = {
       );
 
       if (!updatedProduct) {
-        const error = new Error('Product not found');
+        const error = new Error("Product not found");
         error.status = 404;
         throw error;
       }
@@ -74,15 +117,15 @@ module.exports = {
       next(err);
     }
   },
-async productDestroy(req, res, next) {
-  try {
-    const deletedProduct = await Product.findByIdAndDelete(req.params.id);
-    if (!deletedProduct) {
-      return res.status(404).send('Product not found');
+  async productDestroy(req, res, next) {
+    try {
+      const deletedProduct = await Product.findByIdAndDelete(req.params.id);
+      if (!deletedProduct) {
+        return res.status(404).send("Product not found");
+      }
+      res.redirect("/products");
+    } catch (err) {
+      next(err);
     }
-    res.redirect('/products');
-  } catch (err) {
-    next(err);
-  }
-}
+  },
 };

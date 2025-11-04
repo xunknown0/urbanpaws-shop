@@ -1,3 +1,4 @@
+require("dotenv").config(); 
 const express = require('express');
 const path = require('path');
 const favicon = require('serve-favicon');
@@ -17,6 +18,7 @@ const productsRouter = require("./routes/products");
 const reviewsRouter = require("./routes/reviews");
 
 const app = express();
+
 
 // ✅ Parse JSON bodies
 app.use(express.json());
