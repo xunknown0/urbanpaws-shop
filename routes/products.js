@@ -25,11 +25,14 @@ router.post("/", upload.array("images", 5), asyncErrorHandler(productCreate));
 router.get("/:id", asyncErrorHandler(productShow));
 
 /* GET products EDIT /product/:id/edit */
-router.get("/:id/edit", asyncErrorHandler(productEdit));
+router.get("/:id/edit", upload.array("images", 5), asyncErrorHandler(productEdit));
 
 /* PUT products UPDATE /products/id */
-router.put("/:id", asyncErrorHandler(productUpdate));
-
+router.put(
+  "/:id",
+  upload.array("images", 5), // Multer handles up to 5 images
+  asyncErrorHandler(productUpdate)
+);
 /* DELETE products DELETE /products/id */
 router.delete("/:id", asyncErrorHandler(productDestroy));
 

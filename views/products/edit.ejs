@@ -1,24 +1,84 @@
-
-
 <h1>Edit Product</h1>
 
-<form action="/products/<%=product.id%>?_method=PUT" method="POST">
+<form action="/products/<%= product._id %>?_method=PUT" method="POST" id="productEditForm" enctype="multipart/form-data">
+  <!-- Title -->
+  <div>
+    <input
+      type="text"
+      name="product[title]"
+      placeholder="Title"
+      value="<%= product.title %>"
+      required
+    />
+  </div>
+
+  <!-- Price -->
+  <div>
+    <input
+      type="number"
+      step="0.01"
+      name="product[price]"
+      placeholder="Price"
+      value="<%= product.price %>"
+      required
+    />
+  </div>
+
+  <!-- Description -->
+  <div>
+    <textarea name="product[description]" placeholder="Description" required>
+<%= product.description %></textarea>
+  </div>
+
+  <!-- Location -->
+  <div>
+    <input
+      type="text"
+      name="product[location]"
+      placeholder="Location"
+      value="<%= product.location %>"
+      required
+    />
+  </div>
+
+  <!-- Image Upload -->
+  <div>
+    <input type="file" id="imageUpload" accept="image/*" name="images" multiple />
     <div>
-        <input type="text" name="product[title]" placeholder="Title" value="<%=product.title%>">
+      <% if (product.images && product.images.length > 0) { %>
+        <% product.images.forEach((image, i) => { %>
+          <div style="display:inline-block; margin:5px; text-align:center;">
+            <img src="<%= image.url %>" width="100px" alt="">
+            <div>
+              <label for="image<%= i %>">Delete?</label>
+              <input type="checkbox" name="deleteImages[]" class="imageDeleteCheckbox" id="image<%= i %>" value="<%= image.public_id %>">
+            </div>
+          </div>
+        <% }) %>
+      <% } %>
     </div>
-    <div>
-        <input type="number" step="0.01" name="product[price]" placeholder="Price" value="<%=product.price%>">
-    </div>
-    <div>
-    <div>
-        <input type="file" accept="images/*" name="images" multiple />
-    </div>
-        <textarea name="product[description]" placeholder="Description"><%=product.description%></textarea>
-    </div>
-    <div>
-        <input type="text" name="product[location]" placeholder="Location" value="<%=product.location%>">
-    </div>
-    <div>
-        <input type="submit" value="Create Product">
-    </div>
+  </div>
+
+  <div>
+    <input type="submit" value="Update Product" />
+  </div>
 </form>
+
+<script>
+  const productEditForm = document.getElementById('productEditForm');
+
+  productEditForm.addEventListener('submit', function(event) {
+    const imageUploads = document.getElementById('imageUpload').files.length; // new uploads
+    const existingImgs = document.querySelectorAll('.imageDeleteCheckbox').length; // current images
+    const imgDeletions = document.querySelectorAll('.imageDeleteCheckbox:checked').length; // marked for deletion
+
+    // Total images after deletion + new uploads
+    const newTotal = existingImgs - imgDeletions + imageUploads;
+
+    if (newTotal > 4) {
+      event.preventDefault();
+      const removalAmt = newTotal - 4;
+      alert(`You need to remove at least ${removalAmt} image${removalAmt === 1 ? '' : 's'} before uploading!`);
+    }
+  });
+</script>
