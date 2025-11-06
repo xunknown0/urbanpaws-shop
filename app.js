@@ -19,12 +19,8 @@ const reviewsRouter = require("./routes/reviews");
 
 const app = express();
 
-
-// ✅ Parse JSON bodies
 app.use(express.json());
 
-
-// ✅ Parse URL-encoded bodies (for form submissions)
 app.use(express.urlencoded({ extended: true }));
 
 // connect to the database

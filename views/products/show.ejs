@@ -1,3 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Simple Mapbox Map</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+  
+  <!-- Mapbox GL JS -->
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.47.0/mapbox-gl.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.47.0/mapbox-gl.css' rel='stylesheet' />
+
+
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  #map {
+    width: 350px;
+    height: 200px;
+  }
+
+  .marker {
+    background-image: url('/images/mapbox-icon.png');
+    background-size: cover;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .mapboxgl-popup {
+    max-width: 200px;
+  }
+
+  .mapboxgl-popup-content {
+    text-align: center;
+    font-family: 'Open Sans', sans-serif;
+  }
+</style>
+
+</head>
+<body>
 <h1><%= product.title %></h1>
 <div><p>Price:<%= product.price.toFixed(2) %></p></div>
 <div><p>Description: <%= product.description %></p></div>
@@ -6,7 +51,7 @@
     <img src="<%= image.url %>" alt="<%= product.name %>" width="300">
   <% }) %>
 </div>
-<div><p>Location: <%= product.location %></p></div>
+<div id="map"></div>
 <div>
   <a href="/products/<%= product._id %>/edit">
     <button>Edit Product</button>
@@ -22,3 +67,28 @@
     <input type="submit" value="Delete" />
   </form>
 </div>
+<script>
+var product = <%- JSON.stringify(product) %>;
+mapboxgl.accessToken = 'pk.eyJ1IjoibWFrdHBuIiwiYSI6ImNtaG5ybGIzMjAzMG8yaXNpOTBwZ3BxN3QifQ.zL-xsr61P461W4oGBf4TpQ';
+
+var map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/mapbox/light-v9',
+  center: product.coordinates,
+  zoom: 5
+});
+
+// create a HTML element for our post location/marker
+var el = document.createElement('div');
+el.className = 'marker';
+
+// make a marker for our location and add to the map
+new mapboxgl.Marker(el)
+.setLngLat(product.coordinates)
+.setPopup(new mapboxgl.Popup({ offset: 25 }) // add popups
+.setHTML('<h3>' + product.title + '</h3><p>' + product.location + '</p>'))
+.addTo(map);
+
+    </script>
+</body>
+</html>

@@ -7,8 +7,7 @@ const ProductSchema = new Schema({
     description: String,
     images: [{url: String, public_id: String}],
     location: String,
-    lat: Number,
-    lng: Number,
+    coordinates: Array,
     owner: {
         type: Schema.Types.ObjectId,
         ref: 'User'
