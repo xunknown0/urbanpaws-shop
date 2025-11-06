@@ -157,7 +157,7 @@ async  productCreate(req, res, next) {
           );
         }
       }
-
+      
 
       if (req.files && req.files.length > 0) {
         const uploadResults = await Promise.all(
@@ -177,7 +177,16 @@ async  productCreate(req, res, next) {
 
         product.images.push(...newImages);
       }
-
+       if(req.body.product.location !== product.location){
+          let response = await geocodingClient
+          .forwardGeocode({
+            query: req.body.product.location,
+            limit: 1
+          })
+          .send()
+          product.coordinates = response.body.features[0].geometry.coordinates;
+          
+        }
     
       if (req.body.product) {
         const { title, description, price, location } = req.body.product;

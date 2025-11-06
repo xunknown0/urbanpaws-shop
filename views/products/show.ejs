@@ -2,13 +2,13 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Simple Mapbox Map</title>
+  <title>Show</title>
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
   
   <!-- Mapbox GL JS -->
-  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.47.0/mapbox-gl.js'></script>
-  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.47.0/mapbox-gl.css' rel='stylesheet' />
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.17.0-beta.1/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.17.0-beta.1/mapbox-gl.js"></script>
 
 
 <style>
@@ -18,21 +18,21 @@
   }
 
   #map {
-    width: 350px;
-    height: 200px;
+    width: 400px;
+    height: 300px;
   }
 
   .marker {
     background-image: url('/images/mapbox-icon.png');
     background-size: cover;
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     cursor: pointer;
   }
 
   .mapboxgl-popup {
-    max-width: 200px;
+    max-width: 300px;
   }
 
   .mapboxgl-popup-content {
@@ -75,7 +75,7 @@ var map = new mapboxgl.Map({
   container: 'map',
   style: 'mapbox://styles/mapbox/light-v9',
   center: product.coordinates,
-  zoom: 5
+  zoom: 4
 });
 
 // create a HTML element for our post location/marker
