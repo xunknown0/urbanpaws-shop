@@ -1,5 +1,6 @@
 require("dotenv").config(); 
 const express = require('express');
+const engine = require('ejs-mate');
 const path = require('path');
 const favicon = require('serve-favicon');
 const logger = require('morgan');
@@ -27,6 +28,9 @@ app.use(express.urlencoded({ extended: true }));
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/urbanpaw-shop')
   .then(() => console.log('✅ MongoDB connected'))
   .catch(err => console.error('❌ MongoDB connection error:', err));
+
+// use ejs-locals for all ejs templates:
+app.engine('ejs', engine);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -63,6 +67,19 @@ passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+//Set local variable middleware
+app.use(function(req,res,next){
+  //Set Page Title
+  res.locals.title = 'Urbanpaws-Shop';
+  //Set success flash messsage
+  res.locals.success = req.session.success ||'';
+  delete req.session.success;
+  //Set error flash message
+  res.locals.error = req.session.error ||'';
+  delete req.session.error;
+  //continue on to next function in middleware
+  next();
+});
 
 // Mount routes
 app.use("/", indexRouter);
@@ -86,5 +103,7 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+
 
 module.exports = app;

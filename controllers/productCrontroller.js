@@ -2,6 +2,7 @@ const path = require("path");
 const Product = require("../models/product");
 const cloudinary = require("cloudinary").v2;
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
+const { title } = require("process");
 const geocodingClient = mbxGeocoding({ accessToken: process.env.MAPBOX_TOKEN });
 
 cloudinary.config({
@@ -16,7 +17,7 @@ module.exports = {
   async productIndex(req, res, next) {
     try {
       const products = await Product.find({});
-      res.render("products/index", { products });
+      res.render('products/index', { products, title: 'Products' });
     } catch (err) {
       next(err);
     }
@@ -100,6 +101,7 @@ async  productCreate(req, res, next) {
     const product = await Product.create(req.body);
 
     // 6️⃣ Redirect to product show page
+    req.session.success = 'Product Create Successfully'
     res.redirect(`/products/${product._id}`);
   } catch (err) {
     console.error("Product creation error:", err);
@@ -109,10 +111,14 @@ async  productCreate(req, res, next) {
   // GET /products/:id
   async productShow(req, res, next) {
     try {
+     
+
       const { id } = req.params;
       const product = await Product.findById(id).populate("reviews");
+        
       if (!product) {
-        return res.status(404).send("Product not found");
+        req.session.error = 'Product not found';
+        return res.redirect("/products");
       }
       res.render("products/show", { product });
     } catch (err) {
