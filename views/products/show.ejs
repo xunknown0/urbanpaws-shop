@@ -1,77 +1,9 @@
-<% layout('layouts/boilerplate') -%>
+<% layout('layouts/product-show-layout') -%>
 
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title><%= product.title %> | Urbanpaws-Shop</title>
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Mapbox GL JS -->
-  <link href="https://api.mapbox.com/mapbox-gl-js/v3.17.0-beta.1/mapbox-gl.css" rel="stylesheet">
-  <script src="https://api.mapbox.com/mapbox-gl-js/v3.17.0-beta.1/mapbox-gl.js"></script>
-
-  <style>
-    body {
-      font-family: 'Open Sans', sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-
-    #map {
-      width: 100%;
-      height: 300px;
-      margin-top: 20px;
-      border-radius: 10px;
-    }
-
-    .marker {
-      background-image: url('/images/mapbox-icon.png');
-      background-size: cover;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      cursor: pointer;
-    }
-
-    .mapboxgl-popup {
-      max-width: 300px;
-    }
-
-    .mapboxgl-popup-content {
-      text-align: center;
-      font-family: 'Open Sans', sans-serif;
-    }
-
-    .carousel-item img {
-      width: 100%;
-      height: 400px;
-      object-fit: cover;
-      border-radius: 10px;
-    }
-
-    .thumb-img {
-      height: 80px;
-      width: 80px;
-      object-fit: cover;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-right: 5px;
-      border: 2px solid transparent;
-      transition: border 0.2s;
-    }
-
-    .thumb-img:hover, .thumb-active {
-      border: 2px solid #0d6efd;
-    }
-  </style>
 </head>
 <body>
   <div class="container mt-5">
     <h1 class="text-center mb-4"><%= product.title %></h1>
-
     <div class="row">
       <!-- Main Carousel -->
       <div class="col-md-6">
@@ -122,48 +54,13 @@
         </div>
       </div>
     </div>
-
-
   </div>
-
   <script>
     // Mapbox
     var product = <%- JSON.stringify(product) %>;
-    mapboxgl.accessToken = 'pk.eyJ1IjoibWFrdHBuIiwiYSI6ImNtaG5ybGIzMjAzMG8yaXNpOTBwZ3BxN3QifQ.zL-xsr61P461W4oGBf4TpQ';
-    var map = new mapboxgl.Map({
-      container: 'map',
-      style: 'mapbox://styles/mapbox/light-v9',
-      center: product.coordinates,
-      zoom: 4
-    });
-
-    var el = document.createElement('div');
-    el.className = 'marker';
-    new mapboxgl.Marker(el)
-      .setLngLat(product.coordinates)
-      .setPopup(new mapboxgl.Popup({ offset: 25 })
-      .setHTML('<h5>' + product.title + '</h5><p>' + product.location + '</p>'))
-      .addTo(map);
-
-    // Carousel + Thumbnails Sync
-    const carousel = document.getElementById('productCarousel');
-    const carouselInstance = new bootstrap.Carousel(carousel);
-    const thumbs = document.querySelectorAll('.thumb-img');
-
-    thumbs.forEach(thumb => {
-      thumb.addEventListener('click', () => {
-        const index = parseInt(thumb.dataset.index);
-        carouselInstance.to(index);
-      });
-    });
-
-    carousel.addEventListener('slide.bs.carousel', function (e) {
-      thumbs.forEach(t => t.classList.remove('thumb-active'));
-      thumbs[e.to].classList.add('thumb-active');
-    });
   </script>
+ <script src="/javascripts/product-show.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

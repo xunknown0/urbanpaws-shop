@@ -33,8 +33,6 @@ router.post('/login',userLogin );
 
 router.get('/logout',userLogout );
 
-
-
 /* GET profile/:user_id*/
 router.get('/profile', (req, res, next) => {
   res.send('GET /profile/:user_id');
